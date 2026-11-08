@@ -1,15 +1,13 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+// Build tooling preset — includes tanstackStart, react, tailwind, path aliases. Do NOT add those manually.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+
+// MOBILE_BUILD=1 produces a fully static app (dist/client) that is bundled inside the Android APK
+// so it runs without internet.
+const mobile = process.env.MOBILE_BUILD === "1";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+    ...(mobile ? { spa: { enabled: true, prerender: { outputPath: "/index.html" } } } : {}),
   },
 });
