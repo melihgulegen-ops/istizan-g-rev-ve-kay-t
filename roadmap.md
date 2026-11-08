@@ -5,3 +5,4 @@
 - [ ] Rename GitHub repo to "melihistan" — blocked: must be done by the user on GitHub (Settings → Repository name); sync keeps working.
 - [ ] Flutter rewrite — not possible here (web-only platform); Capacitor wrapper used instead for Android/iOS.
 - [ ] APK delivery — waits for the user to push a `v1.0.0` tag on GitHub.
+- [ ] User's GitHub repo "Istizan" is a different Expo project (not this app) — its Actions fail because the code doesn't match. User must connect THIS project via Project Settings → GitHub → Connect to get the correct repo with the Capacitor workflow.
