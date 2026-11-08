@@ -3,7 +3,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // MOBILE_BUILD=1 produces a fully static app (dist/client) that is bundled inside the Android APK
 // so it runs without internet.
-const mobile = process.env.MOBILE_BUILD === "1";
+const mobile = process.env["MOBILE_BUILD"] === "1";
 
 export default defineConfig({
   tanstackStart: {
