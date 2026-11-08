@@ -4,7 +4,14 @@ on:
   push:
     tags:
       - "v*"
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "APK'nın ekleneceği sürüm etiketi (örn. v1.0.0). Boş bırakılırsa sadece Artifact olarak yüklenir."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -16,17 +23,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v2
-        # Buraya with: bun-version: latest ekleyebilirsin ama varsayılan hali de çalışır.
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
-          # DİKKAT: packages: tools satırını buradan SİLDİK.
 
       - uses: android-actions/setup-android@v3
         with:
-          packages: '' # Varsayılan 'tools' paketini indirmesini engelliyoruz.
+          packages: ''
 
       - name: Install dependencies
         run: bun install
@@ -50,8 +55,18 @@ jobs:
           name: melihistan-apk
           path: melihistan.apk
 
+      - name: Determine release tag
+        id: tag
+        run: |
+          TAG=""
+          if [ "${{ github.event_name }}" = "release" ]; then TAG="${{ github.event.release.tag_name }}"; fi
+          if [ "${{ github.event_name }}" = "push" ]; then TAG="${{ github.ref_name }}"; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then TAG="${{ github.event.inputs.tag }}"; fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Attach to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: steps.tag.outputs.tag != ''
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.tag }}
           files: melihistan.apk
